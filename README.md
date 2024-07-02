@@ -1,13 +1,13 @@
 # MTG Bulk Scan
 
-MTG Bulk Scan is a Python script that automates the process of adding Magic: The Gathering cards to your deckbox.org collection. It uses OpenAI's GPT-4o model to analyze images of cards and extract relevant information, creating a CSV file ready for import into deckbox.org. Creates a complete CSV requiring no adjustments after import.
+MTG Bulk Scan is a Python script that automates the process of adding Magic: The Gathering cards to your deckbox.org collection. It uses OpenAI's GPT-4 Vision model to analyze images of cards and extract relevant information, creating a CSV file ready for import into deckbox.org.
 
 ## Features
 
-- Process an entire folder of cards at once and create a CSV file to easily upload your cards to your deckbox.org inventory.
+- Process multiple card images at once
 - Automatic resizing of images to meet API requirements
 - Customizable card condition, language, and other attributes
-- Automatically detects foiled cards and marks them appropriately (beta feature).
+- Option to mark cards as foil or use AI detection
 - Debug mode for troubleshooting
 - Error logging for failed card processes
 
@@ -20,7 +20,7 @@ MTG Bulk Scan is a Python script that automates the process of adding Magic: The
 
 1. Clone the repository:
 ```
-git clone https://github.com/JackTheTripperr/mtg-bulk-scan.git
+git clone https://github.com/yourusername/mtg-bulk-scan.git
 cd mtg-bulk-scan
 ```
 
@@ -42,12 +42,12 @@ pip install -r requirements.txt
 ```
 
 4. Set up your OpenAI API key:
-- Make a copy of the `.env.example` rename it to `.env`
+- Copy the `.env.example` file to `.env`
 - Open the `.env` file and replace `your_api_key_here` with your actual OpenAI API key
 
 ## Usage
 
-1. Using your phone or any other camera, snap a quick photo of each card you would like to enter into your database. Place your card images in the `card-pics` folder.
+1. Place your Magic: The Gathering card images in the `card-pics` folder.
 
 2. Run the script with desired options:
 ```
@@ -55,46 +55,37 @@ python mtg_bulk_scan.py [OPTIONS]
 ```
 
 Available options:
-- `--help`: Prints help message
-- `--condition OPTIONS`: Options: M (Mint), NM (Near Mint), LP (Lightly Played), PL (Played), HP (Heavily Played), PR (Poor), PX (Proxy), B (Blank), defaults to Near Mint
-- `--language LANGUAGE`: Set the language of the cards
-- `--my-price PRICE`: "$X.XX" Set your price for the cards
-- `--tradelist-count COUNT`: Set to 1 to automatically mark your cards available for trade, default 0
-- `--signed OPTIONS`: Options: signed, mark cards as signed, defaults to blank
-- `--artist-proof`: Mark cards as artist proofs, defaults to blank
-- `--altered-art`: Mark cards as altered art, defaults to blank
-- `--misprint`: Mark cards as misprints, defaults to blank
-- `--promo`: Mark cards as promos, defaults to blank
-- `--textless`: Mark cards as textless, defaults to blank
-- `--printing-note`: Add a printing note, defaults to blank
-- `--tags`: Add tags to the cards, defaults to blank
-- `--foil`: Options: yes, auto. Set foil status. Defaults to blank. "auto" is in beta.
+- `--condition`: Set the condition of the cards (M, NM, LP, PL, HP, PR, PX, B)
+- `--language`: Set the language of the cards
+- `--my-price`: Set your price for the cards
+- `--tradelist-count`: Set the tradelist count
+- `--signed`: Mark cards as signed
+- `--artist-proof`: Mark cards as artist proofs
+- `--altered-art`: Mark cards as altered art
+- `--misprint`: Mark cards as misprints
+- `--promo`: Mark cards as promos
+- `--textless`: Mark cards as textless
+- `--printing-note`: Add a printing note
+- `--tags`: Add tags to the cards
+- `--foil`: Set foil status (yes, auto)
 - `--debug`: Enable debug mode
 
 3. After processing, you'll find a `card-list.csv` file in the root directory, ready for import into deckbox.org.
 
 ## Example
 
-Process all cards in Good (Lightly Played) condition and automatically identify and label foils:
+Process all cards in Near Mint condition, English language, and mark them all as foil:
 ```
-python mtg_bulk_scan.py --condition LP --foil auto
+python mtg_bulk_scan.py --condition NM --language English --foil yes
 ```
 
 ## Troubleshooting
 
-If any cards fail to process, check the `error_log.txt` file for the missed cards. You can also run the script with the `--debug` flag for more detailed logging.
+If any cards fail to process, check the `error_log.txt` file for details. You can also run the script with the `--debug` flag for more detailed logging.
 
-## Patience Please!
+## Contributing
 
-I'm very new to Python and programming in general. Please bear with me as I experience some growing pains.
-
-## What's Next?
-
-- CSV formatting for other websites
-- Automatic renaming of pictures for easy upload to your sales pages
-- Better command line args/instructions
-- Optimizations
-- Support for other APIs
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
