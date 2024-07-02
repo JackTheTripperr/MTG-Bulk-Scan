@@ -39,7 +39,7 @@ def parse_arguments():
     parser.add_argument("--textless", default="", help="Textless status of the imported cards. Defaults to blank.")
     parser.add_argument("--printing-note", default="", help="Printing Note of the imported cards. Defaults to blank.")
     parser.add_argument("--tags", default="", help="Set Tags for the imported cards. Defaults to blank.")
-    parser.add_argument("--foil", choices=["yes", "auto"], default=" ", help="Optional, sets foil status. If flag is not used, foil status will be blank. 'yes' marks all cards as foil, 'auto' uses AI detection (experimental).")
+    parser.add_argument("--foil", choices=["yes", "auto"], default="", help="Optional, sets foil status. If flag is not used, foil status will be blank. 'yes' marks all cards as foil, 'auto' uses AI detection (experimental).")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     return parser.parse_args()
 
@@ -224,7 +224,7 @@ def main():
                 elif args.foil == "auto":
                     foil_status = card_data.get('foil', '')
                 else:
-                    foil_status = " "  # Default to blank
+                    foil_status = ""  # Default to blank
 
                 row_data = {
                     'Count': '1',  # Default count is 1
