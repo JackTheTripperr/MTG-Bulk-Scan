@@ -7,10 +7,58 @@ import logging
 import re
 import argparse
 import shutil
+import time
+import sys
+import rawpy
 from dotenv import load_dotenv
 from PIL import Image
 import io
+from colorama import init, Fore, Back, Style
 
+def print_colored_char(char, color):
+    sys.stdout.write(color + char + Style.RESET_ALL)
+    sys.stdout.flush()
+    time.sleep(0.001)  # Printing Speed
+
+def print_banner():
+    banner = """
+            ███╗   ███╗████████╗ ██████╗                                                         
+            ████╗ ████║╚══██╔══╝██╔════╝                                                         
+            ██╔████╔██║   ██║   ██║  ███╗                                                        
+            ██║╚██╔╝██║   ██║   ██║   ██║                                                        
+            ██║ ╚═╝ ██║   ██║   ╚██████╔╝                                                        
+            ╚═╝     ╚═╝   ╚═╝    ╚═════╝                                                         
+                                                                                                 
+██████╗ ██╗   ██╗██╗     ██╗  ██╗    ███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗ 
+██╔══██╗██║   ██║██║     ██║ ██╔╝    ██╔════╝██╔════╝██╔══██╗████╗  ██║████╗  ██║██╔════╝██╔══██╗
+██████╔╝██║   ██║██║     █████╔╝     ███████╗██║     ███████║██╔██╗ ██║██╔██╗ ██║█████╗  ██████╔╝
+██╔══██╗██║   ██║██║     ██╔═██╗     ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
+██████╔╝╚██████╔╝███████╗██║  ██╗    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
+╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
+                                                                                                 
+ ╦┌─┐┌─┐┬┌─╔╦╗┬ ┬┌─┐╔╦╗┬─┐┬┌─┐┌─┐┌─┐┬─┐┬─┐  ┌─┐  ╔═╗┬┌┬┐┬ ┬┬ ┬┌┐ 
+ ║├─┤│  ├┴┐ ║ ├─┤├┤  ║ ├┬┘│├─┘├─┘├┤ ├┬┘├┬┘  │└┘  ║ ╦│ │ ├─┤│ │├┴┐
+╚╝┴ ┴└─┘┴ ┴ ╩ ┴ ┴└─┘ ╩ ┴└─┴┴  ┴  └─┘┴└─┴└─  └──  ╚═╝┴ ┴ ┴ ┴└─┘└─┘
+    """
+    colors = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA]
+    color_index = 0
+    for char in banner:
+        if char != '\n':
+            print_colored_char(char, colors[color_index])
+            color_index = (color_index + 1) % len(colors)
+        else:
+            sys.stdout.write('\n')
+    print(Style.RESET_ALL)
+
+def print_progress(message, progress, total):
+    bar_length = 50
+    filled_length = int(bar_length * progress / total)
+    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+    percentage = progress / total * 100
+    sys.stdout.write(f'\rProcessing {message: <30} [{bar}] {percentage:5.1f}%')
+    sys.stdout.flush()
+
+# Simplify condition arg
 def condition_map(value):
     condition_mapping = {
         'M': 'Mint',
@@ -43,7 +91,7 @@ def parse_arguments():
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     return parser.parse_args()
 
-# Set up logging based on debug flag
+# Debug arg
 args = parse_arguments()
 logging_level = logging.DEBUG if args.debug else logging.INFO
 logging.basicConfig(level=logging_level, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -63,7 +111,7 @@ image_folder = "card-pics"
 # Output CSV file
 output_file = "card-list.csv"
 
-# Error log file
+# Card processing error log output
 error_log_file = "error_log.txt"
 
 # Empty .temp directory if debug mode is on
@@ -75,34 +123,41 @@ if args.debug:
     os.makedirs(temp_dir, exist_ok=True)
     logging.debug(f"Created {temp_dir} directory")
 
+# Resizing image to an appropriate size for the API
 def resize_image(image_path, debug=False):
-    with Image.open(image_path) as img:
-        # Get original dimensions
-        width, height = img.size
-        
-        # Calculate scaling factor
-        max_short_side = 767
-        max_long_side = 1999
-        scale = min(max_short_side / min(width, height), max_long_side / max(width, height))
-        
-        # If image is already smaller, don't upscale
-        if scale >= 1:
-            return img
-        
-        # Calculate new dimensions
-        new_width = int(width * scale)
-        new_height = int(height * scale)
-        
-        # Resize image
-        resized_img = img.resize((new_width, new_height), Image.LANCZOS)
-        
-        if debug:
-            # Save resized image to .temp folder
-            temp_path = os.path.join('.temp', os.path.basename(image_path))
-            resized_img.save(temp_path, format="JPEG", quality=100)
-            logging.debug(f"Resized image saved to {temp_path}")
-        
-        return resized_img
+    if image_path.lower().endswith('.dng'):
+        with rawpy.imread(image_path) as raw:
+            rgb = raw.postprocess()
+        img = Image.fromarray(rgb)
+    else:
+        img = Image.open(image_path)
+
+    # Get original dimensions
+    width, height = img.size
+    
+    # Calculate scaling factor
+    max_short_side = 767
+    max_long_side = 1999
+    scale = min(max_short_side / min(width, height), max_long_side / max(width, height))
+    
+    # If image is already smaller, don't upscale
+    if scale >= 1:
+        return img
+    
+    # Calculate new dimensions
+    new_width = int(width * scale)
+    new_height = int(height * scale)
+    
+    # Resize image
+    resized_img = img.resize((new_width, new_height), Image.LANCZOS)
+    
+    if debug:
+        # Save resized image to .temp folder
+        temp_path = os.path.join('.temp', os.path.basename(image_path))
+        resized_img.save(temp_path, format="JPEG", quality=100)
+        logging.debug(f"Resized image saved to {temp_path}")
+    
+    return resized_img
 
 def encode_image(image_path, debug=False):
     # Resize image
@@ -170,7 +225,7 @@ def process_single_image(image_path):
         content = response['choices'][0]['message']['content']
         logging.debug(f"API Response: {content}")
         
-        # Extract JSON from the response
+        # Extract JSON from the response. GPT-4o doesn't always return consistent or even proper JSON. Some workaround need to be made to account for inconsistencies
         json_match = re.search(r'\{[\s\S]*\}', content)
         if json_match:
             json_str = json_match.group(0)
@@ -194,11 +249,15 @@ def process_single_image(image_path):
         return None
 
 def main():
+    if not args.debug:
+        init()  # Initialize colorama. Debug flag removes a lot of the fancy colors and animations
+        print_banner()
+
     if not os.path.exists(image_folder):
         logging.error(f"Image folder '{image_folder}' does not exist.")
         return
 
-    image_files = [f for f in os.listdir(image_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    image_files = [f for f in os.listdir(image_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.dng'))]
     
     if not image_files:
         logging.error(f"No image files found in '{image_folder}'.")
@@ -206,14 +265,17 @@ def main():
 
     error_cards = []
 
+    if not args.debug:
+        print("Initializing CSV file...")
     with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['Count', 'Tradelist Count', 'Name', 'Edition', 'Edition Code', 'Card Number', 'Condition', 'Language', 'Foil', 'Signed', 'Artist Proof', 'Altered Art', 'Misprint', 'Promo', 'Textless', 'Printing ID', 'Printing Note', 'Tags', 'My Price']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-        for image_file in image_files:
+        for i, image_file in enumerate(image_files):
+            if not args.debug:
+                print_progress(image_file, i + 1, len(image_files))
             image_path = os.path.join(image_folder, image_file)
-            logging.info(f"Processing image: {image_path}")
             
             card_data = process_single_image(image_path)
 
@@ -227,7 +289,7 @@ def main():
                     foil_status = ""  # Default to blank
 
                 row_data = {
-                    'Count': '1',  # Default count is 1
+                    'Count': '1',
                     'Tradelist Count': args.tradelist_count,
                     'Name': card_data.get('card_name', ''),
                     'Edition': card_data.get('set_name', ''),
@@ -252,14 +314,22 @@ def main():
                 logging.error(f"Failed to process the image: {image_file}")
                 error_cards.append(image_file)
 
+    if not args.debug:
+        print_progress("Finalizing", len(image_files), len(image_files))
+        print("\nProcessing complete!")
     logging.info(f"All images processed. Data written to {output_file}")
 
     if error_cards:
+        if not args.debug:
+            print("Writing error log...")
         with open(error_log_file, 'w', encoding='utf-8') as error_file:
             error_file.write("The following cards could not be processed:\n")
             for card in error_cards:
                 error_file.write(f"{card}\n")
         logging.info(f"List of cards that could not be processed written to {error_log_file}")
+
+    if not args.debug:
+        print(Fore.GREEN + "All operations completed successfully!" + Style.RESET_ALL)
 
 if __name__ == "__main__":
     main()
