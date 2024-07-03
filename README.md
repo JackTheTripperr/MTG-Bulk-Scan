@@ -17,7 +17,7 @@ Faced with catching up on of months of card entry, I figured there ought to be a
 - In addition to the above fields, you can also customize Foil, Signed, Artist Proof, Altered Art, Misprint,Promo, Textless, Printing ID, Printing Note, Tags, and My Price for the batch of cards you're working on.
 - If you're looking to save even more time, let the AI detect which cards are foil and have the CSV correctly populated with that data, too (this feature is experimental, but has suprisingly accurate results).
 - Debug mode included to help you trouble shoot if any issues pop up.
-- For cards that can't be indentified or otherwise entered into the CSV automatically, a error log is generated so you can quickly identify which cards got left out.
+- For cards that can't be indentified or otherwise entered into the CSV automatically, an error log is generated so you can quickly identify which cards got left out.
 
 ## Prerequisites
 
