@@ -12,7 +12,7 @@ Faced with catching up on of months of card entry, I figured there ought to be a
 
 - Automated processing of your MTG cards for quick and easy entry into Deckbox.org.
 - Very little human input required. Snap a quick picture of your new cards and let the scanner do the rest.
-- Photos are during processing to ensure efficient API use.
+- Photos are resized during processing to ensure efficient API use.
 - By default, a deckbox.org formatted CSV is made with prepopulated Count, Tradelist Count, Name, Edition, Edition Code, Card Number, Condition, and Language fields. With these fields filled, you no longer have to hunt for the right set, card number, art work, etc. Just import from the CSV and your done.
 - In addition to the above fields, you can also customize Foil, Signed, Artist Proof, Altered Art, Misprint,Promo, Textless, Printing ID, Printing Note, Tags, and My Price for the batch of cards you're working on.
 - If you're looking to save even more time, let the AI detect which cards are foil and have the CSV correctly populated with that data, too (this feature is experimental, but has suprisingly accurate results).
