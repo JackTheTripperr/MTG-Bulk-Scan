@@ -6,7 +6,7 @@ MTG Bulk Scan is a project born from the frusteration of manually entering Magic
 
 You get the idea! I found myself putting off the entering of new cards into the online collection tracker I use (deckbox.org) because I found the process tedious. Before long, I'd have been to a couple of FNM's, maybe a pre-release or two and I'd have a literal mountain of cards sitting on my dining room table that needed to be entered. Looking at the pile only made me put off entering the cards even longer! I let this happen long enough that my wife took notice and suddenly I was facing a whole new, much more serious problem. 
 
-Faced with catching on of months of card entry, I figured there ought to be a way to make the process go a little faster. Coincidentally, around the same time I had been playing with various LLM's like ChatGPT and Claude, and I was dying to find a way to use this technology to make my life a little bit easier. These circumstances all collided in my head and gave birth to the baby that was born as MTG Bulk Scan.
+Faced with catching up on of months of card entry, I figured there ought to be a way to make the process go a little faster. Coincidentally, around the same time I had been playing with various LLM's like ChatGPT and Claude, and I was dying to find a way to use this technology to make my life a little bit easier. These circumstances all collided in my head and gave birth to the baby that was born as MTG Bulk Scan.
 
 ## Features
 
