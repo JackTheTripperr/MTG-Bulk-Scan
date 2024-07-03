@@ -18,7 +18,7 @@ from colorama import init, Fore, Back, Style
 def print_colored_char(char, color):
     sys.stdout.write(color + char + Style.RESET_ALL)
     sys.stdout.flush()
-    time.sleep(0.001)  # Printing Speed
+    time.sleep(0.001)  # Adjust this value to change the printing speed
 
 def print_banner():
     banner = """
@@ -58,7 +58,6 @@ def print_progress(message, progress, total):
     sys.stdout.write(f'\rProcessing {message: <30} [{bar}] {percentage:5.1f}%')
     sys.stdout.flush()
 
-# Simplify condition arg
 def condition_map(value):
     condition_mapping = {
         'M': 'Mint',
@@ -91,7 +90,7 @@ def parse_arguments():
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     return parser.parse_args()
 
-# Debug arg
+# Set up logging based on debug flag
 args = parse_arguments()
 logging_level = logging.DEBUG if args.debug else logging.INFO
 logging.basicConfig(level=logging_level, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -111,7 +110,7 @@ image_folder = "card-pics"
 # Output CSV file
 output_file = "card-list.csv"
 
-# Card processing error log output
+# Error log file
 error_log_file = "error_log.txt"
 
 # Empty .temp directory if debug mode is on
@@ -123,7 +122,6 @@ if args.debug:
     os.makedirs(temp_dir, exist_ok=True)
     logging.debug(f"Created {temp_dir} directory")
 
-# Resizing image to an appropriate size for the API
 def resize_image(image_path, debug=False):
     if image_path.lower().endswith('.dng'):
         with rawpy.imread(image_path) as raw:
@@ -184,7 +182,7 @@ def process_image(base64_image):
                 "content": [
                     {
                         "type": "text",
-                        "text": "Please analyze the Magic: The Gathering card in the image and provide the following information in JSON format: card_name, set_name, set_code, card_number (IMPORTANT: remove all preceding 0's and letters from the card number. Do not return a fraction. Do not return the total number of cards in the set. For example, 006 becomes 6, LT 0026 becomes 26, 051/064 becomes 51, 057/280 becomes 57), and foil (use 'foil' if it's foil, " " if not.)."
+                        "text": "You are a Magic: The Gathering Card Analysis assistant. Please analyze the Magic: The Gathering card in the image and provide the following information in JSON format: card_name, set_name, set_code, card_number (IMPORTANT: remove all preceding 0's and letters from the card number. Do not return a fraction. Do not return the total number of cards in the set. For example, 006 becomes 6, LT 0026 becomes 26, 051/064 becomes 51, 057/280 becomes 57), and foil (use 'foil' if it's foil, " " if not). The most important aspect of this job is to ensure you return the card_number with 100% accuracy and exactly as described. Check twice or even three times if needed to ensure this objective is fullfilled. The extra effort will earn you a $1500 tip and possibly solve world peace. Use the internet to search for the latest details."
                     },
                     {
                         "type": "image_url",
@@ -225,7 +223,7 @@ def process_single_image(image_path):
         content = response['choices'][0]['message']['content']
         logging.debug(f"API Response: {content}")
         
-        # Extract JSON from the response. GPT-4o doesn't always return consistent or even proper JSON. Some workaround need to be made to account for inconsistencies
+        # Extract JSON from the response
         json_match = re.search(r'\{[\s\S]*\}', content)
         if json_match:
             json_str = json_match.group(0)
@@ -250,7 +248,7 @@ def process_single_image(image_path):
 
 def main():
     if not args.debug:
-        init()  # Initialize colorama. Debug flag removes a lot of the fancy colors and animations
+        init()  # Initialize colorama
         print_banner()
 
     if not os.path.exists(image_folder):
@@ -289,7 +287,7 @@ def main():
                     foil_status = ""  # Default to blank
 
                 row_data = {
-                    'Count': '1',
+                    'Count': '1',  # Default count is 1
                     'Tradelist Count': args.tradelist_count,
                     'Name': card_data.get('card_name', ''),
                     'Edition': card_data.get('set_name', ''),
