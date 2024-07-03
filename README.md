@@ -1,6 +1,6 @@
 # MTG Bulk Scan
 
-![MTG Bulk Scan in action](https://s10.gifyu.com/images/SrGbF.gif)
+![MTG Bulk Scan in action](./Assets/demo.gif)
 
 MTG Bulk Scan is a project born from the frusteration of manually entering Magic: The Gathering cards into an online database and spending far too long finding the right card, then finding the right set, then finding the right art, then marking the card for trade, then...
 
