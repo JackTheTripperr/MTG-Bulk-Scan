@@ -121,6 +121,17 @@ if args.debug:
         logging.debug(f"Emptied {temp_dir} directory")
     os.makedirs(temp_dir, exist_ok=True)
     logging.debug(f"Created {temp_dir} directory")
+    
+# Load deckbox.org setnames and codes from set_names.csv
+def load_set_names(file_path='set_names.csv'):
+    set_names = {}
+    with open(file_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            set_names[row[0]] = row[1]
+    return set_names
+    
+set_names = load_set_names()
 
 def resize_image(image_path, debug=False):
     if image_path.lower().endswith('.dng'):
@@ -182,7 +193,7 @@ def process_image(base64_image):
                 "content": [
                     {
                         "type": "text",
-                        "text": "You are a Magic: The Gathering Card Analysis assistant. Please analyze the Magic: The Gathering card in the image and provide the following information in JSON format: card_name, set_name, set_code, card_number (IMPORTANT: remove all preceding 0's and letters from the card number. Do not return a fraction. Do not return the total number of cards in the set. For example, 006 becomes 6, LT 0026 becomes 26, 051/064 becomes 51, 057/280 becomes 57), and foil (use 'foil' if it's foil, " " if not). The most important aspect of this job is to ensure you return the card_number with 100% accuracy and exactly as described. Check twice or even three times if needed to ensure this objective is fullfilled. The extra effort will earn you a $1500 tip and possibly solve world peace. Use the internet to search for the latest details."
+                        "text": "You are a Magic: The Gathering Card Analysis assistant. Please analyze the Magic: The Gathering card in the image and provide the following information in JSON format: card_name, set_code, and card_number (IMPORTANT: remove all preceding 0's and letters from the card number. Do not return a fraction. Do not return the total number of cards in the set. For example, 006 becomes 6, LT 0026 becomes 26, 051/064 becomes 51, 057/280 becomes 57), and foil (use 'foil' if it's foil, " " if not). The most important aspect of this job is to ensure you return the card_number with 100% accuracy and exactly as described. Check twice or even three times if needed to ensure this objective is fullfilled. Just as important is the accuracy of the set_code. Check twice, or even three times to ensure the set_code is read properly for an accurate response. The extra effort will earn you a $1500 tip and will solve world peace."
                     },
                     {
                         "type": "image_url",
@@ -274,9 +285,9 @@ def main():
             if not args.debug:
                 print_progress(image_file, i + 1, len(image_files))
             image_path = os.path.join(image_folder, image_file)
-            
+        
             card_data = process_single_image(image_path)
-
+            
             if card_data:
                 # Determine foil status based on the --foil argument
                 if args.foil == "yes":
@@ -286,12 +297,16 @@ def main():
                 else:
                     foil_status = ""  # Default to blank
 
+            if card_data:
+                set_code = card_data.get('set_code', '')
+                set_name = set_names.get(set_code, 'Unknown Set')
+
                 row_data = {
                     'Count': '1',  # Default count is 1
                     'Tradelist Count': args.tradelist_count,
                     'Name': card_data.get('card_name', ''),
-                    'Edition': card_data.get('set_name', ''),
-                    'Edition Code': card_data.get('set_code', ''),
+                    'Edition': set_name,
+                    'Edition Code': set_code,
                     'Card Number': card_data.get('card_number', ''),
                     'Condition': args.condition,
                     'Language': args.language,
