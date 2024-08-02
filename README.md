@@ -68,34 +68,34 @@ Faced with catching up on of months of card entry, I figured there ought to be a
    Running the script without options will consider all cards as Near Mint, non-foil, and English. Use the option flags to customize the CSV fields. For example, setting the condition to LP (Lightly Played) will mark all cards in that batch as LP.
 
    ```
-usage: main.py [-h] [-s] [-f {yes,no}] [-t {yes,no}] [-c {M,NM,LP,PL,HP,P,PX}] [-l LANGUAGE] [-S {yes,no}]
+   usage: main.py [-h] [-s] [-f {yes,no}] [-t {yes,no}] [-c {M,NM,LP,PL,HP,P,PX}] [-l LANGUAGE] [-S {yes,no}]
                [-ap {yes,no}] [-aa {yes,no}] [-m {yes,no}] [-T TAGS] [--debug]
 
-Use photos of your cards to populate a CSV for 1-click import into deckbox.org
+   Use photos of your cards to populate a CSV for 1-click import into deckbox.org
 
-options:
-  -h, --help            show this help message and exit
-  -s, --strict          Disables fuzzy searching and only populates the CSV if the script feels confident it has found
+   options:
+     -h, --help            show this help message and exit
+     -s, --strict          Disables fuzzy searching and only populates the CSV if the script feels confident it has found
                         the correct printing of the card
-  -f {yes,no}, --foil {yes,no}
+     -f {yes,no}, --foil {yes,no}
                         Specify if the batch of cards is foiled
-  -t {yes,no}, --tradelist {yes,no}
+     -t {yes,no}, --tradelist {yes,no}
                         Specify if the card batch should be marked for trade
-  -c {M,NM,LP,PL,HP,P,PX}, --condition {M,NM,LP,PL,HP,P,PX}
+     -c {M,NM,LP,PL,HP,P,PX}, --condition {M,NM,LP,PL,HP,P,PX}
                         Specify the condition of the card batch
-  -l LANGUAGE, --language LANGUAGE
+     -l LANGUAGE, --language LANGUAGE
                         Specify the language of the card batch
-  -S {yes,no}, --signed {yes,no}
+     -S {yes,no}, --signed {yes,no}
                         Specify if the batch of cards has been signed
-  -ap {yes,no}, --artist-proof {yes,no}
+     -ap {yes,no}, --artist-proof {yes,no}
                         Specify if the batch of cards are proofs
-  -aa {yes,no}, --altered-art {yes,no}
+     -aa {yes,no}, --altered-art {yes,no}
                         Specify if the batch of cards have altered art
-  -m {yes,no}, --misprint {yes,no}
+     -m {yes,no}, --misprint {yes,no}
                         Specify if the batch of cards is misprinted
-  -T TAGS, --tags TAGS  User specified tags for the card batch
-  --debug               Enable debug logging
-   ```
+     -T TAGS, --tags TAGS  User specified tags for the card batch
+     --debug               Enable debug logging
+      ```
 
 4. After the script finishes, you'll find a `DATE_TIME.csv` file in the projects root directory, ready for import into deckbox.org. If the script wasn't confident about the card details it found, the cards entry will be prefaced with "***". Quickly check these entries to ensure they are accurate an then delete the "***" once you're satsified. If the script wasn't able to accurately parse the information from a card, you'll find a copy of it's picture in the "card-errors" folder in the projects root directory, as well as an "errors_DATE-TIME.csv which contains any additional info about the error. 
 
