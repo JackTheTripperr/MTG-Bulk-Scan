@@ -67,7 +67,7 @@ Faced with catching up on of months of card entry, I figured there ought to be a
    ```
    Running the script without options will consider all cards as Near Mint, non-foil, and English. Use the option flags to customize the CSV fields. For example, setting the condition to LP (Lightly Played) will mark all cards in that batch as LP.
 
-```
+   ```
 usage: main.py [-h] [-s] [-f {yes,no}] [-t {yes,no}] [-c {M,NM,LP,PL,HP,P,PX}] [-l LANGUAGE] [-S {yes,no}]
                [-ap {yes,no}] [-aa {yes,no}] [-m {yes,no}] [-T TAGS] [--debug]
 
@@ -95,7 +95,7 @@ options:
                         Specify if the batch of cards is misprinted
   -T TAGS, --tags TAGS  User specified tags for the card batch
   --debug               Enable debug logging
-```
+   ```
 
 4. After the script finishes, you'll find a `DATE_TIME.csv` file in the projects root directory, ready for import into deckbox.org. If the script wasn't confident about the card details it found, the cards entry will be prefaced with "***". Quickly check these entries to ensure they are accurate an then delete the "***" once you're satsified. If the script wasn't able to accurately parse the information from a card, you'll find a copy of it's picture in the "card-errors" folder in the projects root directory, as well as an "errors_DATE-TIME.csv which contains any additional info about the error. 
 
